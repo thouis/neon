@@ -602,12 +602,23 @@ class Convolution(ParameterLayer):
             self.convparams.update(d)
 
     def __str__(self):
-        return ("Convolution Layer '%s': %d x (%dx%d) inputs, %d x (%dx%d) "
-                "outputs, padding %d, stride %d" %
-                (self.name,
-                 self.in_shape[0], self.in_shape[1], self.in_shape[2],
-                 self.out_shape[0], self.out_shape[1], self.out_shape[2],
-                 self.convparams['pad_h'], self.convparams['str_h']))
+        if len(self.in_shape) == 3:
+            ishape = "%d x (%dx%d)" % (self.in_shape[0], self.in_shape[1], self.in_shape[2])
+            pd = "%d,%d" % (self.convparams['pad_h'], self.convparams['pad_w'])
+            st = "%d,%d" % (self.convparams['str_h'], self.convparams['str_w'])
+        else:
+            ishape = "%d x (%dx%dx%d)" % (self.in_shape[0], self.in_shape[1], self.in_shape[2], self.in_shape[3])
+            pd = "%d,%d,%d" % (self.convparams['pad_d'], self.convparams['pad_h'], self.convparams['pad_w'])
+            st = "%d,%d,%d" % (self.convparams['str_d'], self.convparams['str_h'], self.convparams['str_w'])
+
+        if len(self.out_shape) == 3:
+            oshape = "%d x (%dx%d)" % (self.out_shape[0], self.out_shape[1], self.out_shape[2])
+        else:
+            oshape = "%d x (%dx%dx%d)" % (self.out_shape[0], self.out_shape[1], self.out_shape[2], self.out_shape[3])
+
+        return ("Convolution Layer '%s': %s inputs, %s "
+                "outputs, padding %s, stride %s" %
+                (self.name, ishape, oshape, pd, st))
 
     def configure(self, in_obj):
         super(Convolution, self).configure(in_obj)
